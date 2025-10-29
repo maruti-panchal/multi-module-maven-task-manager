@@ -54,5 +54,28 @@ public class AdminController {
                 .then(Mono.just(ResponseEntity.status(HttpStatus.NO_CONTENT).body(true)));
     }
 
+    @GetMapping
+    public Flux<TaskResponseDto> list(@RequestParam(required=false) String username,
+                                      @RequestParam(required=false) Integer dueDays,
+                                      @RequestParam(defaultValue="0") int offset,
+                                      @RequestParam(defaultValue="20") int limit) {
+        int dueBeforeValue = (dueDays == null) ? 0 : dueDays;
+        return adminService.filteredTasks(username,dueBeforeValue,offset,limit);
+
+    }
+
+    @GetMapping("/search")
+    public Mono<TaskResponseDto> findByTitle(@RequestParam("title") String title) {
+        return adminService.findByTitle(title);
+    }
+
+    @GetMapping("/due-between")
+    public Flux<TaskResponseDto> findDueDateBetween(
+            @RequestParam("min") int min,
+            @RequestParam("max") int max) {
+
+        return adminService.findDueDateBetween(min, max);
+    }
+
 
 }

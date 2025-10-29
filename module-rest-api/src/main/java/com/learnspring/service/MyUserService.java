@@ -41,8 +41,9 @@ public class MyUserService {
                 .flatMap(tuple -> {
                     String username = tuple.getT1();
                     TaskRequestDto dto = tuple.getT2();
-                    TaskEntity entity = new TaskEntity(null, dto.getTitle(), dto.getDescription(), username, dto.getDueDays());
-                    return taskRepository.save(entity)
+                    TaskEntity taskEntity=TaskEntity.builder().username(username).description(dto.getDescription()).dueDays(dto.getDueDays()).title(dto.getTitle()).build();
+//                    TaskEntity entity = new TaskEntity(null, dto.getTitle(), dto.getDescription(), username, dto.getDueDays());
+                    return taskRepository.save(taskEntity)
                             .map(savedTask -> Tuples.of(savedTask, username));
                 })
                 .flatMap(tuple -> {
