@@ -9,10 +9,8 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Repository
-public interface TaskRepository extends ReactiveMongoRepository<TaskEntity, String> {
+public interface TaskRepository extends ReactiveMongoRepository<TaskEntity, String> ,TaskRepositoryCustom{
     Mono<TaskEntity> findById(String id);
     Flux<TaskEntity> findByUsername(String username);
     Mono<TaskEntity> findByIdAndUsername(String id, String username);
-    @Query("{ 'title': { $regex: ?0, $options: 'i' }}")
-    Flux<TaskEntity> findByTitleRegexAndStatus(String titleRegex, String status);
 }

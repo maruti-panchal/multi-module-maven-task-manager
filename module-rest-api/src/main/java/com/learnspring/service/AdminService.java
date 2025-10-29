@@ -4,7 +4,6 @@ package com.learnspring.service;
 import com.learnspring.dtos.TaskResponseDto;
 import com.learnspring.entity.TaskEntity;
 import com.learnspring.repository.TaskRepository;
-import com.learnspring.repository.TaskRepositoryCustomImpl;
 import com.learnspring.repository.UserRepository;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
@@ -17,12 +16,11 @@ import reactor.core.publisher.Mono;
 public class AdminService {
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
-    private final TaskRepositoryCustomImpl taskRepositoryCustom;
 
-    public AdminService(TaskRepository taskRepository, UserRepository userRepository, TaskRepositoryCustomImpl taskRepositoryCustom) {
+
+    public AdminService(TaskRepository taskRepository, UserRepository userRepository) {
         this.taskRepository = taskRepository;
         this.userRepository = userRepository;
-        this.taskRepositoryCustom = taskRepositoryCustom;
     }
 
     public Flux<TaskResponseDto> getAllTasks() {
@@ -66,7 +64,7 @@ public class AdminService {
         return ReactiveSecurityContextHolder.getContext()
                 .flatMapMany(ctx -> {
                     Authentication auth = ctx.getAuthentication();
-                    return taskRepositoryCustom.findByFilters(username, dueBefore, offset, limit);
+                    return taskRepository.findByFilters(username, dueBefore, offset, limit);
                 })
                 .map(this::toResponse)
                 .switchIfEmpty(Flux.empty());
@@ -77,7 +75,7 @@ public class AdminService {
         return ReactiveSecurityContextHolder.getContext()
                 .flatMap(ctx -> {
                     Authentication auth = ctx.getAuthentication();
-                    return taskRepositoryCustom.findByTitle(title);
+                    return taskRepository.findByTitle(title);
                 })
                 .map(this::toResponse)
                 .switchIfEmpty(Mono.empty());
@@ -88,7 +86,7 @@ public class AdminService {
         return ReactiveSecurityContextHolder.getContext()
                 .flatMapMany(ctx -> {
                     Authentication auth = ctx.getAuthentication();
-                    return taskRepositoryCustom.findDueDateBetween(min, max);
+                    return taskRepository.findDueDateBetween(min, max);
                 })
                 .map(this::toResponse)
                 .switchIfEmpty(Flux.empty());
